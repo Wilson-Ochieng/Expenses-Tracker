@@ -9,7 +9,7 @@
 
 **Create expenses.dart with this code**
 
-import 'package:flutter/material.dart';
+```import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
 
@@ -53,7 +53,7 @@ class _ExpensesState extends State<Expenses> {
    
   ;}
   
-}
+}```
 
 
 ## creation of expenses_list folder

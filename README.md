@@ -1,16 +1,65 @@
 # expense_tracker
 
-A new Flutter project.
+**A new Flutter project.**
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+**This project is a starting point for a Flutter application.**
+## creation of pages
 
-A few resources to get you started if this is your first Flutter project:
+**Create expenses.dart with this code**
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+import 'package:flutter/material.dart';
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+class Expenses extends StatefulWidget {
+
+  const Expenses({super.key});
+
+  @override
+
+     State<Expenses> createState() {
+      return _ExpensesState();
+    
+  }
+  
+}
+
+
+class _ExpensesState extends State<Expenses> {
+
+  @override
+
+ Widget build( context) {
+
+  return  const  Scaffold(
+    body: Column(
+
+
+      children: [
+
+
+        Text('The Chart'),
+
+        Text('Expenses List..'),
+      ],
+    ),
+
+
+
+
+  )
+
+
+   
+  ;}
+  
+}
+
+
+## creation of expenses_list folder
+
+  After creation checkout to starter branch
+
+
+
+.

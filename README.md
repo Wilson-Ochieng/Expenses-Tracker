@@ -9,21 +9,19 @@
 
 **Create expenses.dart with this code**
 
-import 'package:flutter/material.dart';
+```import 'package:flutter/material.dart';
 
 class Expenses extends StatefulWidget {
 
   const Expenses({super.key});
 
   @override
-
      State<Expenses> createState() {
       return _ExpensesState();
     
   }
   
 }
-
 
 class _ExpensesState extends State<Expenses> {
 
@@ -44,21 +42,17 @@ class _ExpensesState extends State<Expenses> {
       ],
     ),
 
-
-
-
   )
-
-
    
   ;}
   
-}
+} ```
 
 
-## creation of expenses_list folder
 
-  After creation checkout to starter branch
+creation of expenses_list folder
+
+ After creation checkout to starter branch
 
 
 

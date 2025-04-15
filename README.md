@@ -112,7 +112,7 @@ class _ExpensesState extends State<Expenses> {
 
 ### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes a `TextField` for entering the title of the expense.
+The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It uses `TextEditingController` to manage the input fields and includes a `Cancel` button to close the modal.
 
 ```dart
 import 'package:flutter/material.dart';
@@ -127,17 +127,54 @@ class NewExpense extends StatefulWidget {
 }
 
 class _NewExpenseState extends State<NewExpense> {
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           TextField(
+            controller: _titleController,
             maxLength: 50,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               label: Text('Title'),
             ),
+          ),
+          TextField(
+            controller: _amountController,
+            maxLength: 50,
+            decoration: const InputDecoration(
+              prefix: Text('\$'),
+              label: Text('Amount'),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  print(_titleController.text);
+                  print(_amountController.text);
+                },
+                child: const Text('Save Expense'),
+              ),
+            ],
           ),
         ],
       ),
@@ -146,33 +183,51 @@ class _NewExpenseState extends State<NewExpense> {
 }
 ```
 
-- **`TextField`**: A widget that allows users to input text.
-  - **`maxLength`**: Limits the input to 50 characters.
-  - **`InputDecoration`**: Adds a label to the `TextField` with the text "Title".
-- **`Padding`**: Adds padding around the `Column` to create spacing between the widget and the screen edges.
-- **`Column`**: Stacks the `TextField` vertically with other widgets (if added later).
-
-This widget will be used in the modal bottom sheet to collect user input for new expenses.
+- **`TextEditingController`**: Used to manage the input fields for the title and amount.
+  - **`_titleController`**: Manages the title input field.
+  - **`_amountController`**: Manages the amount input field.
+- **`dispose`**: Disposes of the controllers when the widget is removed from the widget tree to free up resources.
+- **`TextButton`**: A button labeled "Cancel" that closes the modal using `Navigator.pop(context)`.
+- **`ElevatedButton`**: A button labeled "Save Expense" that prints the entered title and amount to the console.
 
 ---
 
-### 4. **How the `TextField` Works**
+### 4. **How the `TextEditingController` and `Cancel` Button Work**
 
-The `TextField` in the `NewExpense` widget allows users to input the title of a new expense. It is styled with an `InputDecoration` to display a label:
+1. **`TextEditingController`**:
+   - The `TextEditingController` is assigned to the `controller` property of the `TextField`.
+   - It allows you to retrieve the current value of the input field using `.text`.
 
-```dart
-TextField(
-  maxLength: 50,
-  decoration: InputDecoration(
-    label: Text('Title'),
-  ),
-)
-```
+   ```dart
+   final _titleController = TextEditingController();
+   final _amountController = TextEditingController();
+   ```
 
-- **`maxLength`**: Ensures the title does not exceed 50 characters.
-- **`InputDecoration`**: Adds a label to guide the user on what to input.
+   - The values are accessed when the "Save Expense" button is pressed:
 
-This `TextField` can be extended to include validation logic or additional fields for other expense details, such as amount and category.
+   ```dart
+   ElevatedButton(
+     onPressed: () {
+       print(_titleController.text);
+       print(_amountController.text);
+     },
+     child: const Text('Save Expense'),
+   )
+   ```
+
+2. **`Cancel` Button**:
+   - The `Cancel` button uses `Navigator.pop(context)` to close the modal bottom sheet when pressed.
+
+   ```dart
+   TextButton(
+     onPressed: () {
+       Navigator.pop(context);
+     },
+     child: const Text('Cancel'),
+   )
+   ```
+
+This logic ensures that users can either save their input or cancel the operation and close the modal.
 
 ---
 
@@ -254,7 +309,7 @@ class ExpenseItem extends StatelessWidget {
 
 1. **`main.dart`** initializes the app and sets `Expenses` as the home screen.
 2. **`expenses.dart`** manages the state of the expenses list, displays the chart placeholder, the list of expenses, and includes an `AppBar` with a title and an action button.
-3. **`new_expense.dart`** provides a `TextField` for users to input the title of a new expense.
+3. **`new_expense.dart`** provides input fields for the title and amount using `TextEditingController` and includes a `Cancel` button to close the modal.
 4. **`expenses_list.dart`** builds the list of expenses using `ExpenseItem`.
 5. **`expense_item.dart`** displays the details of a single expense in a card format.
 

@@ -1,14 +1,13 @@
 # expense_tracker
 
-A new Flutter project.
+**A new Flutter project.**
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+**This project is a starting point for a Flutter application.**
 ## creation of pages
 
-Create expenses.dart with this code 
-
+**Create expenses.dart with this code**
 
 import 'package:flutter/material.dart';
 
@@ -53,21 +52,13 @@ class _ExpensesState extends State<Expenses> {
 
    
   ;}
-  ## creation of expenses_list folder
+  
+}
+
+
+## creation of expenses_list folder
 
   After creation checkout to starter branch
-
-
-
-
-
-
-
-
-
-
-
-}
 
 
 

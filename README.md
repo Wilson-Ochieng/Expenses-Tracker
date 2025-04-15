@@ -74,6 +74,13 @@ class _ExpensesState extends State<Expenses> {
         category: Category.travel),
   ];
 
+  void _openAddExpenseOverlay() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => const Text('Modal bottom sheet'),
+    );
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -81,9 +88,7 @@ class _ExpensesState extends State<Expenses> {
         title: const Text('Flutter Expense Tracker'),
         actions: [
           IconButton(
-            onPressed: () {
-              // Action for adding a new expense
-            },
+            onPressed: _openAddExpenseOverlay,
             icon: const Icon(Icons.add),
           ),
         ],
@@ -100,39 +105,78 @@ class _ExpensesState extends State<Expenses> {
 ```
 
 - **`AppBar`**: Displays a top bar with a title and an action button.
-- **`title`**: Displays the title of the app, "Flutter Expense Tracker".
-- **`actions`**: A list of widgets displayed on the right side of the `AppBar`.
 - **`IconButton`**: Adds a clickable icon button (with the `Icons.add` icon) to the `AppBar` for adding new expenses.
+- **`showModalBottomSheet`**: Displays a modal bottom sheet when the `IconButton` is pressed.
 
 ---
 
-### 3. **How the `AppBar` is Added**
+### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `AppBar` is added to the `Scaffold` widget in the `Expenses` screen. It includes a title and an action button:
+The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes a `TextField` for entering the title of the expense.
 
 ```dart
-appBar: AppBar(
-  title: const Text('Flutter Expense Tracker'),
-  actions: [
-    IconButton(
-      onPressed: () {
-        // Action for adding a new expense
-      },
-      icon: const Icon(Icons.add),
-    ),
-  ],
-),
+import 'package:flutter/material.dart';
+
+class NewExpense extends StatefulWidget {
+  const NewExpense({super.key});
+
+  @override
+  State<NewExpense> createState() {
+    return _NewExpenseState();
+  }
+}
+
+class _NewExpenseState extends State<NewExpense> {
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          TextField(
+            maxLength: 50,
+            decoration: InputDecoration(
+              label: Text('Title'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 ```
 
-- **`title`**: Displays the app's title in the center of the `AppBar`.
-- **`actions`**: Contains an `IconButton` that allows users to perform actions, such as adding a new expense.
-- **`IconButton`**: A clickable button with an icon. In this case, it uses the `Icons.add` icon to represent adding a new expense.
+- **`TextField`**: A widget that allows users to input text.
+  - **`maxLength`**: Limits the input to 50 characters.
+  - **`InputDecoration`**: Adds a label to the `TextField` with the text "Title".
+- **`Padding`**: Adds padding around the `Column` to create spacing between the widget and the screen edges.
+- **`Column`**: Stacks the `TextField` vertically with other widgets (if added later).
 
-The `AppBar` improves the user interface by providing a consistent navigation and action area at the top of the screen.
+This widget will be used in the modal bottom sheet to collect user input for new expenses.
 
 ---
 
-### 4. **Expenses List (`expenses_list.dart`)**
+### 4. **How the `TextField` Works**
+
+The `TextField` in the `NewExpense` widget allows users to input the title of a new expense. It is styled with an `InputDecoration` to display a label:
+
+```dart
+TextField(
+  maxLength: 50,
+  decoration: InputDecoration(
+    label: Text('Title'),
+  ),
+)
+```
+
+- **`maxLength`**: Ensures the title does not exceed 50 characters.
+- **`InputDecoration`**: Adds a label to guide the user on what to input.
+
+This `TextField` can be extended to include validation logic or additional fields for other expense details, such as amount and category.
+
+---
+
+### 5. **Expenses List (`expenses_list.dart`)**
 
 The `ExpensesList` widget displays a list of expenses using a `ListView.builder`.
 
@@ -160,7 +204,7 @@ class ExpensesList extends StatelessWidget {
 
 ---
 
-### 5. **Expense Item (`expense_item.dart`)**
+### 6. **Expense Item (`expense_item.dart`)**
 
 The `ExpenseItem` widget displays the details of a single expense in a card format.
 
@@ -210,7 +254,7 @@ class ExpenseItem extends StatelessWidget {
 
 1. **`main.dart`** initializes the app and sets `Expenses` as the home screen.
 2. **`expenses.dart`** manages the state of the expenses list, displays the chart placeholder, the list of expenses, and includes an `AppBar` with a title and an action button.
-3. **`expense.dart`** defines the structure of an expense and provides utility methods like `formattedDate`.
+3. **`new_expense.dart`** provides a `TextField` for users to input the title of a new expense.
 4. **`expenses_list.dart`** builds the list of expenses using `ExpenseItem`.
 5. **`expense_item.dart`** displays the details of a single expense in a card format.
 
@@ -239,5 +283,3 @@ git checkout lists
 ```
 
 ---
-
-## Checkout to modal branch

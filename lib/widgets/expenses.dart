@@ -1,6 +1,8 @@
 import 'package:expense_tracker/widgets/expenses_list/expenses_list.dart';
+import 'package:expense_tracker/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
+import 'package:uuid/uuid.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -35,6 +37,19 @@ class _ExpensesState extends State<Expenses> {
         category: Category.travel),
   ];
 
+
+  void _openAddExpenseOverlay (){
+
+    //NewExpense(); is imported from new_expense.dart
+    //showModalBottomSheet is a built in function that shows a bottom sheet
+
+    showModalBottomSheet(context: context, builder: (ctx) => const NewExpense() );
+
+
+
+
+  }
+
   @override
   Widget build(context) {
     return  Scaffold(
@@ -43,7 +58,7 @@ class _ExpensesState extends State<Expenses> {
         title: const Text('Flutter Expense Tracker'),
         actions: [
           IconButton(
-            onPressed: (){},
+            onPressed: _openAddExpenseOverlay,
             icon: const Icon(Icons.add),
 
           

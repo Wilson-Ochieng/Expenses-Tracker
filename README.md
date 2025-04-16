@@ -306,7 +306,7 @@ To switch to the `categorydropdown` branch, run:
 git checkout categorydropdown
 
 ```bash
-git checkout lists
+git checkout categorydropdown
 ```
 
 ---

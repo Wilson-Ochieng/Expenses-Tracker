@@ -240,7 +240,9 @@ git checkout lists
 
 ---
 
-## Checkout to modal branch
+## Checkout to modal branch using git command in terminal
+
+git checkout modal
 
 
 **The order of branches from the start of the project  is**

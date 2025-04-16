@@ -241,3 +241,12 @@ git checkout lists
 ---
 
 ## Checkout to modal branch
+
+
+**The order of branches from the start of the project  is**
+ *starter
+ *lists
+ *modal
+ *datasubmission
+ *textController
+ *datepicker

@@ -302,7 +302,8 @@ flutter pub add intl
 - **Starter Branch**: Contains the initial setup for the project.
 - **Lists Branch**: Contains the implementation of the expenses list.
 
-To switch to the `lists` branch, run:
+To switch to the `categorydropdown` branch, run:
+git checkout categorydropdown
 
 ```bash
 git checkout lists

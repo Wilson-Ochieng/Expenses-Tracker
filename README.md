@@ -58,7 +58,15 @@ class _ExpensesState extends State<Expenses> {
 
 ## creation of expenses_list folder
 
-  After creation checkout to lists branch+
+  After creation checkout to lists branch
+
+**The order of branches from the start of the project  is**
+ *starter
+ *lists
+ *modal
+ *datasubmission
+ *textController
+ *datepicker
 
 
 

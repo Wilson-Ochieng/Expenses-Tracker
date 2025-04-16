@@ -279,6 +279,10 @@ flutter pub add intl
 ## To checkout to the next branch use the following git command:
 git checkout datasubmission
 
+## To install all packages use
+
+flutter pub get
+
 
 **The order of branches from the start of the project  is**
  *starter

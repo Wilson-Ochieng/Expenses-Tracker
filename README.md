@@ -77,7 +77,7 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => const Text('Modal bottom sheet'),
+      builder: (ctx) => const NewExpense(),
     );
   }
 
@@ -112,7 +112,42 @@ class _ExpensesState extends State<Expenses> {
 
 ### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes a `TextField` for entering the title of the expense and a button for submission.
+The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes a dropdown for selecting a category, along with other input fields.
+
+#### Category Dropdown Logic
+
+The `NewExpense` widget includes a dropdown to allow users to select a category for the expense.
+
+```dart
+DropdownButton(
+  value: _selectedCategory,
+  items: Category.values
+      .map((category) => DropdownMenuItem(
+            value: category,
+            child: Text(category.name.toUpperCase()),
+          ))
+      .toList(),
+  onChanged: (value) {
+    setState(() {
+      if (value == null) {
+        return;
+      }
+      _selectedCategory = value;
+    });
+  },
+),
+```
+
+- **`DropdownButton`**: A widget that displays a dropdown menu.
+  - **`value`**: The currently selected category.
+  - **`items`**: A list of `DropdownMenuItem` widgets, one for each category.
+  - **`onChanged`**: A callback that updates the `_selectedCategory` variable when the user selects a new category.
+- **`Category.values`**: An enumeration of all available categories (e.g., `food`, `travel`, `leisure`, `work`).
+- **`DropdownMenuItem`**: Represents each selectable item in the dropdown.
+
+---
+
+#### Full Widget Code
 
 ```dart
 import 'package:flutter/material.dart';
@@ -127,10 +162,31 @@ class NewExpense extends StatefulWidget {
 }
 
 class _NewExpenseState extends State<NewExpense> {
-  var _enteredTitle = '';
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+  DateTime? _selectedDate;
+  Category _selectedCategory = Category.leisure;
 
-  void _saveTitleInput(String inputValue) {
-    _enteredTitle = inputValue;
+  void _presentDatePicker() async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year - 1, now.month, now.day);
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      firstDate: firstDate,
+      lastDate: DateTime.now(),
+    );
+
+    setState(() {
+      _selectedDate = pickedDate;
+    });
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -140,17 +196,67 @@ class _NewExpenseState extends State<NewExpense> {
       child: Column(
         children: [
           TextField(
-            onChanged: _saveTitleInput,
+            controller: _titleController,
             maxLength: 50,
             decoration: const InputDecoration(
               label: Text('Title'),
             ),
           ),
+          TextField(
+            controller: _amountController,
+            decoration: const InputDecoration(
+              prefix: Text('\$'),
+              label: Text('Amount'),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
+              Text(
+                _selectedDate == null
+                    ? 'No Date Selected'
+                    : '${_selectedDate!.toLocal()}'.split(' ')[0],
+              ),
+              IconButton(
+                onPressed: _presentDatePicker,
+                icon: const Icon(Icons.calendar_today),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              DropdownButton(
+                value: _selectedCategory,
+                items: Category.values
+                    .map((category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(category.name.toUpperCase()),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    if (value == null) {
+                      return;
+                    }
+                    _selectedCategory = value;
+                  });
+                },
+              ),
+              const Spacer(),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
               ElevatedButton(
                 onPressed: () {
-                  print('$_enteredTitle');
+                  print(_titleController.text);
+                  print(_amountController.text);
+                  print(_selectedDate);
+                  print(_selectedCategory);
                 },
                 child: const Text('Save Expense'),
               ),
@@ -163,42 +269,21 @@ class _NewExpenseState extends State<NewExpense> {
 }
 ```
 
-- **`TextField`**: A widget that allows users to input text.
-  - **`onChanged`**: A callback that saves the input value to the `_enteredTitle` variable.
-  - **`maxLength`**: Limits the input to 50 characters.
-  - **`InputDecoration`**: Adds a label to the `TextField` with the text "Title".
-- **`ElevatedButton`**: A button that, when pressed, prints the entered title to the console.
-
 ---
 
-### 4. **How the Text Saving and Submission Work**
+### 4. **How the Category Dropdown Works**
 
-The `NewExpense` widget includes logic for saving the text input and submitting it:
+1. **Dropdown Initialization**:
+   - The `DropdownButton` is initialized with the `_selectedCategory` variable, which holds the currently selected category.
 
-1. **Saving Input**:
-   - The `TextField` uses the `onChanged` callback to save the entered text to the `_enteredTitle` variable.
-   - The `_saveTitleInput` method is called whenever the text changes.
+2. **Category Options**:
+   - The `items` property of the `DropdownButton` is populated with a list of `DropdownMenuItem` widgets, one for each category in the `Category` enum.
 
-   ```dart
-   void _saveTitleInput(String inputValue) {
-     _enteredTitle = inputValue;
-   }
-   ```
+3. **Category Selection**:
+   - When the user selects a category, the `onChanged` callback is triggered, updating the `_selectedCategory` variable and refreshing the UI.
 
-2. **Submitting Input**:
-   - The `ElevatedButton` is used to submit the entered text.
-   - When the button is pressed, the current value of `_enteredTitle` is printed to the console.
-
-   ```dart
-   ElevatedButton(
-     onPressed: () {
-       print('$_enteredTitle');
-     },
-     child: const Text('Save Expense'),
-   )
-   ```
-
-This logic can be extended to validate the input or pass the entered data to other parts of the app.
+4. **Save Button**:
+   - The `Save Expense` button prints the selected category along with the title, amount, and date to the console.
 
 ---
 
@@ -251,9 +336,7 @@ class ExpenseItem extends StatelessWidget {
         child: Column(
           children: [
             Text(expense.title),
-            const SizedBox(
-              height: 4,
-            ),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Text('\$${expense.amount.toStringAsFixed(2)}'),
@@ -280,7 +363,7 @@ class ExpenseItem extends StatelessWidget {
 
 1. **`main.dart`** initializes the app and sets `Expenses` as the home screen.
 2. **`expenses.dart`** manages the state of the expenses list, displays the chart placeholder, the list of expenses, and includes an `AppBar` with a title and an action button.
-3. **`new_expense.dart`** provides a `TextField` for users to input the title of a new expense and an `ElevatedButton` for submission.
+3. **`new_expense.dart`** provides input fields for the title, amount, date, and category, and includes buttons for saving or canceling the input.
 4. **`expenses_list.dart`** builds the list of expenses using `ExpenseItem`.
 5. **`expense_item.dart`** displays the details of a single expense in a card format.
 
@@ -302,11 +385,10 @@ flutter pub add intl
 - **Starter Branch**: Contains the initial setup for the project.
 - **Lists Branch**: Contains the implementation of the expenses list.
 
-To switch to the `categorydropdown` branch, run:
-git checkout categorydropdown
+To switch to the next branch, run:
 
 ```bash
-git checkout lists
+git checkout nextbranch
 ```
 
 ---

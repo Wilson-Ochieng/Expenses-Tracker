@@ -333,7 +333,7 @@ flutter pub add intl
 
 
 ## To checkout to the next branch use the following git command:
-git checkout datasubmission
+git checkout datepicker
 
 
 **The order of branches from the start of the project  is**

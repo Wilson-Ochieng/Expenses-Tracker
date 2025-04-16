@@ -331,10 +331,18 @@ flutter pub add intl
 - **Starter Branch**: Contains the initial setup for the project.
 - **Lists Branch**: Contains the implementation of the expenses list.
 
-To switch to the `lists` branch, run:
 
-```bash
-git checkout lists
+## To checkout to the next branch use the following git command:
+git checkout datasubmission
+
+
+**The order of branches from the start of the project  is**
+ *starter
+ *lists
+ *modal
+ *datasubmission
+ *textController
+ *datepicker
 ```
 
 ---

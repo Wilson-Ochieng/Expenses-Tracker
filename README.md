@@ -307,6 +307,20 @@ git checkout categorydropdown
 
 ```bash
 git checkout categorydropdown
+
+
+
+
+
 ```
+
+**The order of branches from the start of the project  is**
+ *starter
+ *lists
+ *modal
+ *datasubmission
+ *textController
+ *datepicker
+ *categorydropdown
 
 ---

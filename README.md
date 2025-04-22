@@ -388,7 +388,16 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout nextbranch
+git checkout validation
 ```
+
+**The order of branches from the start of the project  is**
+ *starter
+ *lists
+ *modal
+ *datasubmission
+ *textController
+ *datepicker
+ *categorydropdown
 
 ---

@@ -244,7 +244,6 @@ git checkout lists
 
 git checkout modal
 
-
 **The order of branches from the start of the project  is**
  *starter
  *lists
@@ -252,3 +251,4 @@ git checkout modal
  *datasubmission
  *textController
  *datepicker
+ *categorydropdown

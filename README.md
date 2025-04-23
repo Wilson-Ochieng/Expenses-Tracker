@@ -36,8 +36,29 @@ void main() {
 
 The `Expenses` widget is a `StatefulWidget` that manages the state of the expenses list. It displays a chart placeholder, a list of expenses, and an `AppBar` with a title and an action button.
 
+#### Saving Expense Logic
+
+The `Expenses` widget contains the `_addExpense` function, which is responsible for adding a new expense to the list of registered expenses. This function is passed as an argument to the `NewExpense` widget and executed when the user submits a new expense.
+
+```dart
+void __addExpense(Expense expense) {
+  setState(() {
+    _registeredExpenses.add(expense);
+  });
+}
+```
+
+- **`__addExpense`**:
+  - Takes an `Expense` object as an argument.
+  - Adds the new expense to the `_registeredExpenses` list using `setState` to update the UI.
+
+---
+
+#### Full Widget Code
+
 ```dart
 import 'package:expense_tracker/widgets/expenses_list/expenses_list.dart';
+import 'package:expense_tracker/widgets/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
@@ -77,8 +98,14 @@ class _ExpensesState extends State<Expenses> {
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => const NewExpense(),
+      builder: (ctx) => NewExpense(onAddExpense: __addExpense),
     );
+  }
+
+  void __addExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.add(expense);
+    });
   }
 
   @override
@@ -104,22 +131,40 @@ class _ExpensesState extends State<Expenses> {
 }
 ```
 
-- **`AppBar`**: Displays a top bar with a title and an action button.
-- **`IconButton`**: Adds a clickable icon button (with the `Icons.add` icon) to the `AppBar` for adding new expenses.
-- **`showModalBottomSheet`**: Displays a modal bottom sheet when the `IconButton` is pressed.
+- **`_openAddExpenseOverlay`**:
+  - Opens a modal bottom sheet using `showModalBottomSheet`.
+  - Passes the `_addExpense` function as an argument to the `NewExpense` widget.
 
 ---
 
 ### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes validation logic to ensure that all required fields are filled correctly before saving the expense.
+The `NewExpense` widget receives the `_addExpense` function as a parameter (`onAddExpense`) and executes it when the user submits a new expense.
 
-#### Validation Logic
+#### Receiving and Executing `_addExpense`
 
-The `_submitExpenseData` method validates the user input for the following fields:
-1. **Title**: Ensures the title is not empty.
-2. **Amount**: Ensures the amount is a valid number greater than 0.
-3. **Date**: Ensures a date is selected.
+```dart
+class NewExpense extends StatefulWidget {
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final Function(Expense expense) onAddExpense;
+
+  @override
+  State<NewExpense> createState() {
+    return _NewExpenseState();
+  }
+}
+```
+
+- **`onAddExpense`**:
+  - A function passed from the `Expenses` widget.
+  - Used to save the new expense to the list of registered expenses.
+
+---
+
+#### Submitting the Expense
+
+The `_submitExpenseData` method validates the user input and calls the `onAddExpense` function to save the expense.
 
 ```dart
 void _submitExpenseData() {
@@ -129,7 +174,6 @@ void _submitExpenseData() {
   if (_titleController.text.trim().isEmpty ||
       amountIsInvalid ||
       _selectedDate == null) {
-    // Show an error message if validation fails
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -149,22 +193,25 @@ void _submitExpenseData() {
     return;
   }
 
-  // If validation passes, save the expense
-  print('Title: ${_titleController.text}');
-  print('Amount: $enteredAmount');
-  print('Date: $_selectedDate');
-  print('Category: $_selectedCategory');
+  widget.onAddExpense(
+    Expense(
+      title: _titleController.text,
+      amount: enteredAmount,
+      date: _selectedDate!,
+      category: _selectedCategory,
+    ),
+  );
+
+  Navigator.pop(context);
 }
 ```
 
-- **Validation Steps**:
-  1. **Title**: Checks if the title is empty using `_titleController.text.trim().isEmpty`.
-  2. **Amount**: Converts the input to a double using `double.tryParse` and checks if it is `null` or less than or equal to 0.
-  3. **Date**: Checks if `_selectedDate` is `null`.
-
-- **Error Handling**:
-  - If any validation fails, an `AlertDialog` is displayed with an error message.
-  - The dialog includes an "Okay" button to close it.
+- **Validation**:
+  - Ensures the title is not empty, the amount is valid, and a date is selected.
+  - Displays an error dialog if validation fails.
+- **Saving the Expense**:
+  - Calls `widget.onAddExpense` with a new `Expense` object.
+  - Closes the modal using `Navigator.pop(context)`.
 
 ---
 
@@ -175,7 +222,9 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key, required this.onAddExpense});
+
+  final Function(Expense expense) onAddExpense;
 
   @override
   State<NewExpense> createState() {
@@ -230,10 +279,16 @@ class _NewExpenseState extends State<NewExpense> {
       return;
     }
 
-    print('Title: ${_titleController.text}');
-    print('Amount: $enteredAmount');
-    print('Date: $_selectedDate');
-    print('Category: $_selectedCategory');
+    widget.onAddExpense(
+      Expense(
+        title: _titleController.text,
+        amount: enteredAmount,
+        date: _selectedDate!,
+        category: _selectedCategory,
+      ),
+    );
+
+    Navigator.pop(context);
   }
 
   @override
@@ -328,9 +383,14 @@ class _NewExpenseState extends State<NewExpense> {
 
 ### 4. **How the Code Works Together**
 
-1. **Validation**: Ensures all required fields are filled correctly before saving the expense.
-2. **Error Handling**: Displays an error dialog if validation fails.
-3. **Save Expense**: Prints the entered data to the console if validation passes.
+1. **Passing the Function**:
+   - The `Expenses` widget passes the `_addExpense` function to the `NewExpense` widget as `onAddExpense`.
+
+2. **Receiving the Function**:
+   - The `NewExpense` widget receives the function and calls it when the user submits a new expense.
+
+3. **Saving the Expense**:
+   - The `_addExpense` function adds the new expense to the list and updates the UI.
 
 ---
 
@@ -342,8 +402,6 @@ To use the `uuid` and `intl` packages, run the following commands in your termin
 flutter pub add uuid
 flutter pub add intl
 ```
-
----
 
 ---
 

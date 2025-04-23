@@ -43,11 +43,17 @@ class _ExpensesState extends State<Expenses> {
     //NewExpense(); is imported from new_expense.dart
     //showModalBottomSheet is a built in function that shows a bottom sheet
 
-    showModalBottomSheet(context: context, builder: (ctx) => const NewExpense() );
+    showModalBottomSheet(context: context, builder: (ctx) =>  NewExpense(onAddExpense: __addExpense,) );
 
 
 
 
+  }
+
+  void __addExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.add(expense);
+    });
   }
 
   @override

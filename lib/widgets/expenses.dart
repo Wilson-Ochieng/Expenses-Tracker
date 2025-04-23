@@ -48,12 +48,26 @@ class _ExpensesState extends State<Expenses> {
               onAddExpense: __addExpense,
             ));
   }
-
+ 
+ //Adding Expenses
   void __addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
     });
   }
+
+
+  //Removing Expenses
+
+  void _removeExpense(Expense expense){
+
+    setState(() {
+      _registeredExpenses.remove(expense);
+      
+    });
+  }
+
+
 
   @override
   Widget build(context) {
@@ -70,7 +84,8 @@ class _ExpensesState extends State<Expenses> {
       body: Column(
         children: [
           const Text('The Chart'),
-          Expanded(child: ExpensesList(expenses: _registeredExpenses)),
+          Expanded(child: ExpensesList(expenses: _registeredExpenses,
+          onRemoveExpense: _removeExpense,)),
         ],
       ),
     );

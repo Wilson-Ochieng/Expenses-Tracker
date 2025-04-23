@@ -114,203 +114,82 @@ Expanded(
 
 ---
 
+### 4. **Expenses List (`expenses_list.dart`)**
+
+The `ExpensesList` widget displays a list of expenses using a `ListView.builder`. It also includes a `Dismissible` widget to allow users to remove expenses by swiping them.
+
+#### Dismissible Widget Logic
+
+The `Dismissible` widget wraps each expense item and allows it to be swiped away. When an item is dismissed, the `onRemoveExpense` function is called to remove the expense from the list.
+
+```dart
+return ListView.builder(
+  itemCount: expenses.length,
+  itemBuilder: (ctx, index) => Dismissible(
+    key: ValueKey(expenses[index]),
+    onDismissed: (direction) {
+      onRemoveExpense(expenses[index]);
+    },
+    child: ExpenseItem(expenses[index]),
+  ),
+);
+```
+
+- **`Dismissible`**:
+  - Wraps each expense item to make it swipeable.
+  - **`key`**: A unique key for each item, required for the `Dismissible` widget to track the item.
+  - **`onDismissed`**: A callback triggered when the item is swiped away. It calls the `onRemoveExpense` function to remove the expense from the list.
+
+---
+
 #### Full Widget Code
 
 ```dart
+import 'package:expense_tracker/widgets/expenses_list/expense_item.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracker/models/expense.dart';
 
-class NewExpense extends StatefulWidget {
-  const NewExpense({super.key, required this.onAddExpense});
-
-  final Function(Expense expense) onAddExpense;
-
-  @override
-  State<NewExpense> createState() {
-    return _NewExpenseState();
-  }
-}
-
-class _NewExpenseState extends State<NewExpense> {
-  final _titleController = TextEditingController();
-  final _amountController = TextEditingController();
-  DateTime? _selectedDate;
-  Category _selectedCategory = Category.leisure;
-
-  void _presentDatePicker() async {
-    final now = DateTime.now();
-    final firstDate = DateTime(now.year - 1, now.month, now.day);
-
-    final pickedDate = await showDatePicker(
-      context: context,
-      firstDate: firstDate,
-      lastDate: DateTime.now(),
-    );
-
-    setState(() {
-      _selectedDate = pickedDate;
-    });
-  }
-
-  void _submitExpenseData() {
-    final enteredAmount = double.tryParse(_amountController.text);
-    final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
-
-    if (_titleController.text.trim().isEmpty ||
-        amountIsInvalid ||
-        _selectedDate == null) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Invalid input'),
-          content: const Text(
-              'Please make sure a valid title, amount, date, and category are entered.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Okay'),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-
-    widget.onAddExpense(
-      Expense(
-        title: _titleController.text,
-        amount: enteredAmount,
-        date: _selectedDate!,
-        category: _selectedCategory,
-      ),
-    );
-
-    Navigator.pop(context);
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _amountController.dispose();
-    super.dispose();
-  }
+class ExpensesList extends StatelessWidget {
+  const ExpensesList(
+      {super.key, required this.expenses, required this.onRemoveExpense});
+  final Function(Expense expense) onRemoveExpense;
+  final List<Expense> expenses;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
-      child: Column(
-        children: [
-          TextField(
-            controller: _titleController,
-            maxLength: 50,
-            decoration: const InputDecoration(
-              label: Text('Title'),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  decoration: const InputDecoration(
-                    prefixText: '\$',
-                    label: Text('Amount'),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(_selectedDate == null
-                        ? 'No Date selected'
-                        : formatter.format(_selectedDate!)),
-                    IconButton(
-                      onPressed: _presentDatePicker,
-                      icon: const Icon(
-                        Icons.calendar_month,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              DropdownButton(
-                value: _selectedCategory,
-                items: Category.values
-                    .map((category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(category.name.toUpperCase()),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    if (value == null) {
-                      return;
-                    }
-
-                    _selectedCategory = value;
-                  });
-                },
-              ),
-              const Spacer(),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: _submitExpenseData,
-                child: const Text('Save Expense'),
-              )
-            ],
-          )
-        ],
+    return ListView.builder(
+      itemCount: expenses.length,
+      itemBuilder: (ctx, index) => Dismissible(
+        key: ValueKey(expenses[index]),
+        onDismissed: (direction) {
+          onRemoveExpense(expenses[index]);
+        },
+        child: ExpenseItem(expenses[index]),
       ),
     );
   }
 }
 ```
 
----
-
-### 4. **How the Code Works Together**
-
-1. **Amount Input Field**:
-   - Allows users to input the expense amount.
-   - Ensures the input is numeric and formatted with a dollar sign.
-
-2. **Date Picker**:
-   - Allows users to select a date for the expense.
-   - Displays the selected date or a placeholder if no date is selected.
-
-3. **Validation and Submission**:
-   - Validates the inputs and saves the expense if all fields are valid.
+- **`onRemoveExpense`**:
+  - A function passed from the `Expenses` widget to remove an expense from the list.
+  - Called when an item is swiped away.
 
 ---
 
-## Installing Required Packages
+### 5. **How the Code Works Together**
 
-To use the `uuid` and `intl` packages, run the following commands in your terminal:
+1. **`Dismissible` Widget**:
+   - Wraps each expense item in the `ExpensesList` widget.
+   - Allows users to swipe an item to remove it.
 
-```bash
-flutter pub add uuid
-flutter pub add intl
-```
+2. **`onRemoveExpense` Function**:
+   - Passed from the `Expenses` widget to the `ExpensesList` widget.
+   - Removes the swiped expense from the list and updates the UI.
 
----
+3. **State Management**:
+   - The `Expenses` widget manages the state of the expenses list.
+   - The `setState` method is used to update the list when an expense is removed.
 
 ---
 
@@ -329,24 +208,19 @@ flutter pub add intl
 
 - **Starter Branch**: Contains the initial setup for the project.
 - **Lists Branch**: Contains the implementation of the expenses list.
+- **Modal Branch**: Adds the modal bottom sheet for adding expenses.
+- **DataSubmission Branch**: Implements data submission logic.
+- **TextController Branch**: Adds `TextEditingController` for managing input fields.
+- **DatePicker Branch**: Adds the date picker for selecting expense dates.
+- **CategoryDropdown Branch**: Adds a dropdown for selecting expense categories.
+- **SaveExpense Branch**: Implements the logic for saving expenses.
+- **FullscreenModal Branch**: Makes the modal fullscreen and ensures proper padding.
+- **DismissibleWidget Branch**: Adds the `Dismissible` widget for removing expenses.
 
 To switch to the next branch, run:
 
 ```bash
 git checkout dismissiblewidget
 ```
-
-**The order of branches from the start of the project  is**
- *starter
- *lists
- *modal
- *datasubmission
- *textController
- *datepicker
- *categorydropdown
- *saveexpense
- *fullscreenmodal
- *dismissiblewidget
- 
 
 ---

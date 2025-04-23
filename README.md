@@ -224,7 +224,7 @@ git checkout snackbars
 To switch to the next branch, run:
 
 ```bash
-git checkout snackbars
+git checkout theming
 ```
 
 ---
@@ -241,6 +241,7 @@ git checkout snackbars
  *fullscreenmodal
  *dismissiblewidget
  *snackbars
+ *theming
  
 
 ---

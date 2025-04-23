@@ -220,7 +220,7 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout dismissiblewidget
+git checkout snackbars
 ```
 
 ---

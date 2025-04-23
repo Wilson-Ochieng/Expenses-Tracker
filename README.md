@@ -112,38 +112,59 @@ class _ExpensesState extends State<Expenses> {
 
 ### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes a dropdown for selecting a category, along with other input fields.
+The `NewExpense` widget is a `StatefulWidget` that allows users to input details for a new expense. It includes validation logic to ensure that all required fields are filled correctly before saving the expense.
 
-#### Category Dropdown Logic
+#### Validation Logic
 
-The `NewExpense` widget includes a dropdown to allow users to select a category for the expense.
+The `_submitExpenseData` method validates the user input for the following fields:
+1. **Title**: Ensures the title is not empty.
+2. **Amount**: Ensures the amount is a valid number greater than 0.
+3. **Date**: Ensures a date is selected.
 
 ```dart
-DropdownButton(
-  value: _selectedCategory,
-  items: Category.values
-      .map((category) => DropdownMenuItem(
-            value: category,
-            child: Text(category.name.toUpperCase()),
-          ))
-      .toList(),
-  onChanged: (value) {
-    setState(() {
-      if (value == null) {
-        return;
-      }
-      _selectedCategory = value;
-    });
-  },
-),
+void _submitExpenseData() {
+  final enteredAmount = double.tryParse(_amountController.text);
+  final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+
+  if (_titleController.text.trim().isEmpty ||
+      amountIsInvalid ||
+      _selectedDate == null) {
+    // Show an error message if validation fails
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Invalid input'),
+        content: const Text(
+            'Please make sure a valid title, amount, date, and category are entered.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Okay'),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
+
+  // If validation passes, save the expense
+  print('Title: ${_titleController.text}');
+  print('Amount: $enteredAmount');
+  print('Date: $_selectedDate');
+  print('Category: $_selectedCategory');
+}
 ```
 
-- **`DropdownButton`**: A widget that displays a dropdown menu.
-  - **`value`**: The currently selected category.
-  - **`items`**: A list of `DropdownMenuItem` widgets, one for each category.
-  - **`onChanged`**: A callback that updates the `_selectedCategory` variable when the user selects a new category.
-- **`Category.values`**: An enumeration of all available categories (e.g., `food`, `travel`, `leisure`, `work`).
-- **`DropdownMenuItem`**: Represents each selectable item in the dropdown.
+- **Validation Steps**:
+  1. **Title**: Checks if the title is empty using `_titleController.text.trim().isEmpty`.
+  2. **Amount**: Converts the input to a double using `double.tryParse` and checks if it is `null` or less than or equal to 0.
+  3. **Date**: Checks if `_selectedDate` is `null`.
+
+- **Error Handling**:
+  - If any validation fails, an `AlertDialog` is displayed with an error message.
+  - The dialog includes an "Okay" button to close it.
 
 ---
 
@@ -151,6 +172,7 @@ DropdownButton(
 
 ```dart
 import 'package:flutter/material.dart';
+import 'package:expense_tracker/models/expense.dart';
 
 class NewExpense extends StatefulWidget {
   const NewExpense({super.key});
@@ -182,6 +204,38 @@ class _NewExpenseState extends State<NewExpense> {
     });
   }
 
+  void _submitExpenseData() {
+    final enteredAmount = double.tryParse(_amountController.text);
+    final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
+
+    if (_titleController.text.trim().isEmpty ||
+        amountIsInvalid ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Invalid input'),
+          content: const Text(
+              'Please make sure a valid title, amount, date, and category are entered.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Okay'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    print('Title: ${_titleController.text}');
+    print('Amount: $enteredAmount');
+    print('Date: $_selectedDate');
+    print('Category: $_selectedCategory');
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -202,25 +256,33 @@ class _NewExpenseState extends State<NewExpense> {
               label: Text('Title'),
             ),
           ),
-          TextField(
-            controller: _amountController,
-            decoration: const InputDecoration(
-              prefix: Text('\$'),
-              label: Text('Amount'),
-            ),
-            keyboardType: TextInputType.number,
-          ),
           const SizedBox(height: 16),
           Row(
             children: [
-              Text(
-                _selectedDate == null
-                    ? 'No Date Selected'
-                    : '${_selectedDate!.toLocal()}'.split(' ')[0],
+              Expanded(
+                child: TextField(
+                  controller: _amountController,
+                  decoration: const InputDecoration(
+                    prefixText: '\$',
+                    label: Text('Amount'),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
               ),
-              IconButton(
-                onPressed: _presentDatePicker,
-                icon: const Icon(Icons.calendar_today),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(_selectedDate == null
+                        ? 'No Date selected'
+                        : '${_selectedDate!.toLocal()}'.split(' ')[0]),
+                    IconButton(
+                      onPressed: _presentDatePicker,
+                      icon: const Icon(Icons.calendar_today),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -237,9 +299,7 @@ class _NewExpenseState extends State<NewExpense> {
                     .toList(),
                 onChanged: (value) {
                   setState(() {
-                    if (value == null) {
-                      return;
-                    }
+                    if (value == null) return;
                     _selectedCategory = value;
                   });
                 },
@@ -252,12 +312,7 @@ class _NewExpenseState extends State<NewExpense> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  print(_titleController.text);
-                  print(_amountController.text);
-                  print(_selectedDate);
-                  print(_selectedCategory);
-                },
+                onPressed: _submitExpenseData,
                 child: const Text('Save Expense'),
               ),
             ],
@@ -271,101 +326,11 @@ class _NewExpenseState extends State<NewExpense> {
 
 ---
 
-### 4. **How the Category Dropdown Works**
+### 4. **How the Code Works Together**
 
-1. **Dropdown Initialization**:
-   - The `DropdownButton` is initialized with the `_selectedCategory` variable, which holds the currently selected category.
-
-2. **Category Options**:
-   - The `items` property of the `DropdownButton` is populated with a list of `DropdownMenuItem` widgets, one for each category in the `Category` enum.
-
-3. **Category Selection**:
-   - When the user selects a category, the `onChanged` callback is triggered, updating the `_selectedCategory` variable and refreshing the UI.
-
-4. **Save Button**:
-   - The `Save Expense` button prints the selected category along with the title, amount, and date to the console.
-
----
-
-### 5. **Expenses List (`expenses_list.dart`)**
-
-The `ExpensesList` widget displays a list of expenses using a `ListView.builder`.
-
-```dart
-import 'package:expense_tracker/widgets/expenses_list/expense_item.dart';
-import 'package:flutter/material.dart';
-import 'package:expense_tracker/models/expense.dart';
-
-class ExpensesList extends StatelessWidget {
-  const ExpensesList({super.key, required this.expenses});
-
-  final List<Expense> expenses;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: expenses.length,
-        itemBuilder: (ctx, index) => ExpenseItem(expenses[index]));
-  }
-}
-```
-
-- **`ListView.builder`**: Efficiently builds the list of expenses.
-- **`ExpenseItem`**: A widget that displays individual expense details.
-
----
-
-### 6. **Expense Item (`expense_item.dart`)**
-
-The `ExpenseItem` widget displays the details of a single expense in a card format.
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:expense_tracker/models/expense.dart';
-
-class ExpenseItem extends StatelessWidget {
-  const ExpenseItem(this.expense, {super.key});
-
-  final Expense expense;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          children: [
-            Text(expense.title),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                Text('\$${expense.amount.toStringAsFixed(2)}'),
-                const Spacer(),
-                Icon(categoryIcons[expense.category]),
-                const SizedBox(width: 8),
-                Text(expense.formattedDate),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
-
-- **`Card`**: Displays the expense details in a card layout.
-- **`Row`**: Aligns the amount, category icon, and formatted date horizontally.
-
----
-
-## How the Code Works Together
-
-1. **`main.dart`** initializes the app and sets `Expenses` as the home screen.
-2. **`expenses.dart`** manages the state of the expenses list, displays the chart placeholder, the list of expenses, and includes an `AppBar` with a title and an action button.
-3. **`new_expense.dart`** provides input fields for the title, amount, date, and category, and includes buttons for saving or canceling the input.
-4. **`expenses_list.dart`** builds the list of expenses using `ExpenseItem`.
-5. **`expense_item.dart`** displays the details of a single expense in a card format.
+1. **Validation**: Ensures all required fields are filled correctly before saving the expense.
+2. **Error Handling**: Displays an error dialog if validation fails.
+3. **Save Expense**: Prints the entered data to the console if validation passes.
 
 ---
 
@@ -380,6 +345,8 @@ flutter pub add intl
 
 ---
 
+---
+
 ## Branching Instructions
 
 - **Starter Branch**: Contains the initial setup for the project.
@@ -388,7 +355,7 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout validation
+git checkout saveexpense
 ```
 
 **The order of branches from the start of the project  is**
@@ -399,5 +366,6 @@ git checkout validation
  *textController
  *datepicker
  *categorydropdown
+ *saveexpense
 
 ---

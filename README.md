@@ -413,7 +413,7 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout saveexpense
+git checkout fullscreenmodal
 ```
 
 **The order of branches from the start of the project  is**

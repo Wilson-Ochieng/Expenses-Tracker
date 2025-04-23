@@ -54,164 +54,63 @@ void __addExpense(Expense expense) {
 
 ---
 
-#### Full Widget Code
-
-```dart
-import 'package:expense_tracker/widgets/expenses_list/expenses_list.dart';
-import 'package:expense_tracker/widgets/new_expense.dart';
-import 'package:flutter/material.dart';
-import 'package:expense_tracker/models/expense.dart';
-
-class Expenses extends StatefulWidget {
-  const Expenses({super.key});
-
-  @override
-  State<Expenses> createState() {
-    return _ExpensesState();
-  }
-}
-
-class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registeredExpenses = [
-    Expense(
-        title: 'Flutter Course',
-        amount: 19.99,
-        date: DateTime.now(),
-        category: Category.work),
-    Expense(
-        title: 'Cinema',
-        amount: 19.99,
-        date: DateTime.now(),
-        category: Category.leisure),
-    Expense(
-        title: 'Eatery',
-        amount: 19.99,
-        date: DateTime.now(),
-        category: Category.food),
-    Expense(
-        title: 'Picnic',
-        amount: 19.99,
-        date: DateTime.now(),
-        category: Category.travel),
-  ];
-
-  void _openAddExpenseOverlay() {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => NewExpense(onAddExpense: __addExpense),
-    );
-  }
-
-  void __addExpense(Expense expense) {
-    setState(() {
-      _registeredExpenses.add(expense);
-    });
-  }
-
-  @override
-  Widget build(context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Expense Tracker'),
-        actions: [
-          IconButton(
-            onPressed: _openAddExpenseOverlay,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const Text('The Chart'),
-          Expanded(child: ExpensesList(expenses: _registeredExpenses)),
-        ],
-      ),
-    );
-  }
-}
-```
-
-- **`_openAddExpenseOverlay`**:
-  - Opens a modal bottom sheet using `showModalBottomSheet`.
-  - Passes the `_addExpense` function as an argument to the `NewExpense` widget.
-
----
-
 ### 3. **New Expense Screen (`new_expense.dart`)**
 
-The `NewExpense` widget receives the `_addExpense` function as a parameter (`onAddExpense`) and executes it when the user submits a new expense.
+The `NewExpense` widget allows users to input details for a new expense. It includes fields for the title, amount, date, and category, and provides validation to ensure all inputs are valid.
 
-#### Receiving and Executing `_addExpense`
+#### Amount Input Field
+
+The amount input field allows users to enter the expense amount. It uses a `TextField` with a `TextEditingController` to manage the input.
 
 ```dart
-class NewExpense extends StatefulWidget {
-  const NewExpense({super.key, required this.onAddExpense});
-
-  final Function(Expense expense) onAddExpense;
-
-  @override
-  State<NewExpense> createState() {
-    return _NewExpenseState();
-  }
-}
+Expanded(
+  child: TextField(
+    controller: _amountController,
+    decoration: const InputDecoration(
+      prefixText: '\$',
+      label: Text('Amount'),
+    ),
+    keyboardType: TextInputType.number,
+  ),
+),
 ```
 
-- **`onAddExpense`**:
-  - A function passed from the `Expenses` widget.
-  - Used to save the new expense to the list of registered expenses.
+- **`controller`**: Manages the input value for the amount.
+- **`prefixText`**: Adds a dollar sign (`$`) before the input to indicate currency.
+- **`keyboardType`**: Sets the keyboard type to `TextInputType.number` to allow numeric input.
 
 ---
 
-#### Submitting the Expense
+#### Date Picker
 
-The `_submitExpenseData` method validates the user input and calls the `onAddExpense` function to save the expense.
+The date picker allows users to select a date for the expense. It uses a `Row` widget to display the selected date and an `IconButton` to open the date picker dialog.
 
 ```dart
-void _submitExpenseData() {
-  final enteredAmount = double.tryParse(_amountController.text);
-  final amountIsInvalid = enteredAmount == null || enteredAmount <= 0;
-
-  if (_titleController.text.trim().isEmpty ||
-      amountIsInvalid ||
-      _selectedDate == null) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Invalid input'),
-        content: const Text(
-            'Please make sure a valid title, amount, date, and category are entered.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text('Okay'),
-          ),
-        ],
+Expanded(
+  child: Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      Text(_selectedDate == null
+          ? 'No Date selected'
+          : formatter.format(_selectedDate!)),
+      IconButton(
+        onPressed: _presentDatePicker,
+        icon: const Icon(
+          Icons.calendar_month,
+        ),
       ),
-    );
-    return;
-  }
-
-  widget.onAddExpense(
-    Expense(
-      title: _titleController.text,
-      amount: enteredAmount,
-      date: _selectedDate!,
-      category: _selectedCategory,
-    ),
-  );
-
-  Navigator.pop(context);
-}
+    ],
+  ),
+),
 ```
 
-- **Validation**:
-  - Ensures the title is not empty, the amount is valid, and a date is selected.
-  - Displays an error dialog if validation fails.
-- **Saving the Expense**:
-  - Calls `widget.onAddExpense` with a new `Expense` object.
-  - Closes the modal using `Navigator.pop(context)`.
+- **`_selectedDate`**:
+  - Displays "No Date selected" if no date is selected.
+  - Displays the formatted date if a date is selected.
+- **`IconButton`**:
+  - Opens the date picker dialog when pressed.
+  - Uses the `Icons.calendar_month` icon to represent the date picker.
 
 ---
 
@@ -301,7 +200,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
       child: Column(
         children: [
           TextField(
@@ -328,13 +227,16 @@ class _NewExpenseState extends State<NewExpense> {
               Expanded(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(_selectedDate == null
                         ? 'No Date selected'
-                        : '${_selectedDate!.toLocal()}'.split(' ')[0]),
+                        : formatter.format(_selectedDate!)),
                     IconButton(
                       onPressed: _presentDatePicker,
-                      icon: const Icon(Icons.calendar_today),
+                      icon: const Icon(
+                        Icons.calendar_month,
+                      ),
                     ),
                   ],
                 ),
@@ -354,7 +256,10 @@ class _NewExpenseState extends State<NewExpense> {
                     .toList(),
                 onChanged: (value) {
                   setState(() {
-                    if (value == null) return;
+                    if (value == null) {
+                      return;
+                    }
+
                     _selectedCategory = value;
                   });
                 },
@@ -369,9 +274,9 @@ class _NewExpenseState extends State<NewExpense> {
               ElevatedButton(
                 onPressed: _submitExpenseData,
                 child: const Text('Save Expense'),
-              ),
+              )
             ],
-          ),
+          )
         ],
       ),
     );
@@ -383,14 +288,29 @@ class _NewExpenseState extends State<NewExpense> {
 
 ### 4. **How the Code Works Together**
 
-1. **Passing the Function**:
-   - The `Expenses` widget passes the `_addExpense` function to the `NewExpense` widget as `onAddExpense`.
+1. **Amount Input Field**:
+   - Allows users to input the expense amount.
+   - Ensures the input is numeric and formatted with a dollar sign.
 
-2. **Receiving the Function**:
-   - The `NewExpense` widget receives the function and calls it when the user submits a new expense.
+2. **Date Picker**:
+   - Allows users to select a date for the expense.
+   - Displays the selected date or a placeholder if no date is selected.
 
-3. **Saving the Expense**:
-   - The `_addExpense` function adds the new expense to the list and updates the UI.
+3. **Validation and Submission**:
+   - Validates the inputs and saves the expense if all fields are valid.
+
+---
+
+## Installing Required Packages
+
+To use the `uuid` and `intl` packages, run the following commands in your terminal:
+
+```bash
+flutter pub add uuid
+flutter pub add intl
+```
+
+---
 
 ---
 
@@ -413,7 +333,7 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout saveexpense
+git checkout dismissiblewidget
 ```
 
 **The order of branches from the start of the project  is**
@@ -426,5 +346,7 @@ git checkout saveexpense
  *categorydropdown
  *saveexpense
  *fullscreenmodal
+ *dismissiblewidget
+ 
 
 ---

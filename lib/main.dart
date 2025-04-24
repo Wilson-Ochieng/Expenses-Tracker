@@ -6,9 +6,32 @@ var kColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 96, 59, 181),
   
 );
+var kDarkColorScheme = ColorScheme.fromSeed(
+  brightness: Brightness.dark,
+  seedColor: const  Color.fromARGB(225, 5, 99, 125),);
+
+
 void main() {
   runApp(
     MaterialApp(
+      darkTheme: ThemeData.dark().copyWith(
+        useMaterial3: true,
+        colorScheme: kDarkColorScheme,
+         cardTheme:  const CardTheme( ).copyWith(
+            color: kDarkColorScheme.secondaryContainer,
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kDarkColorScheme.primaryContainer,
+              foregroundColor: kDarkColorScheme.primaryContainer,
+            ),
+          ),
+      ),
+
       theme: ThemeData().copyWith(
           // ignore: deprecated_member_use
           useMaterial3: true,
@@ -20,7 +43,7 @@ void main() {
             foregroundColor: kColorScheme.primaryContainer,
           ) ,
 
-          cardTheme: CardTheme( ).copyWith(
+          cardTheme:  const CardTheme( ).copyWith(
             color: kColorScheme.secondaryContainer,
             margin: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -35,14 +58,14 @@ void main() {
           ),
           textTheme: ThemeData().textTheme.copyWith(
                 titleLarge:  TextStyle(
-                  fontWeight: FontWeight.normal,
+                  fontWeight: FontWeight.bold,
                   color:kColorScheme.onSecondaryContainer,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
               ),
-          scaffoldBackgroundColor: const Color.fromARGB(255, 234, 175, 237)),
+          scaffoldBackgroundColor: const Color.fromARGB(255, 247, 240, 248)),
 
-          
+          themeMode: ThemeMode.system,
       home: const Expenses(),
     ),
   );

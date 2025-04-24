@@ -409,6 +409,7 @@ git checkout chart
  *dismissiblewidget
  *snackbars
  *theming
+ *chart
  
 
 ---

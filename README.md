@@ -332,6 +332,171 @@ void main() {
     ),
   );
 }
+
+
+
+### 8. **Chart Logic (`chart.dart`)**
+
+The `Chart` widget provides a visual representation of the expenses grouped by category. It is displayed at the top of the `Expenses` screen.
+
+#### How the Chart is Created
+
+1. **Expense Buckets**:
+   - The `Chart` widget uses the `ExpenseBucket` class to group expenses by category (e.g., food, leisure, travel, work).
+   - The `buckets` getter creates a list of `ExpenseBucket` objects, one for each category, using the `ExpenseBucket.forCategory` method.
+
+   ```dart
+   List<ExpenseBucket> get buckets {
+     return [
+       ExpenseBucket.forCategory(expenses, Category.food),
+       ExpenseBucket.forCategory(expenses, Category.leisure),
+       ExpenseBucket.forCategory(expenses, Category.travel),
+       ExpenseBucket.forCategory(expenses, Category.work),
+     ];
+   }
+   ```
+
+2. **Maximum Expense**:
+   - The `maxTotalExpense` getter calculates the maximum total expense across all categories. This value is used to determine the height of each bar in the chart.
+
+   ```dart
+   double get maxTotalExpense {
+     double maxTotalExpense = 0;
+
+     for (final bucket in buckets) {
+       if (bucket.totalExpenses > maxTotalExpense) {
+         maxTotalExpense = bucket.totalExpenses;
+       }
+     }
+
+     return maxTotalExpense;
+   }
+   ```
+
+3. **Chart Bars**:
+   - The `ChartBar` widget is used to represent each category as a vertical bar. The height of the bar is proportional to the total expenses in that category relative to the maximum expense.
+
+   ```dart
+   for (final bucket in buckets)
+     ChartBar(
+       fill: bucket.totalExpenses == 0
+           ? 0
+           : bucket.totalExpenses / maxTotalExpense,
+     )
+   ```
+
+4. **Icons for Categories**:
+   - Below the chart bars, icons representing each category are displayed. These icons are styled based on the current theme (light or dark mode).
+
+   ```dart
+   Row(
+     children: buckets
+         .map(
+           (bucket) => Expanded(
+             child: Padding(
+               padding: const EdgeInsets.symmetric(horizontal: 4),
+               child: Icon(
+                 categoryIcons[bucket.category],
+                 color: isDarkMode
+                     ? Theme.of(context).colorScheme.secondary
+                     : Theme.of(context).colorScheme.primary.withOpacity(0.7),
+               ),
+             ),
+           ),
+         )
+         .toList(),
+   )
+   ```
+
+5. **Styling**:
+   - The chart is styled with a gradient background and rounded corners. The gradient changes based on the theme.
+
+   ```dart
+   decoration: BoxDecoration(
+     borderRadius: BorderRadius.circular(8),
+     gradient: LinearGradient(
+       colors: [
+         Theme.of(context).colorScheme.primary.withOpacity(0.3),
+         Theme.of(context).colorScheme.primary.withOpacity(0.0)
+       ],
+       begin: Alignment.bottomCenter,
+       end: Alignment.topCenter,
+     ),
+   ),
+   ```
+
+---
+
+#### How the Chart is Added to the `Expenses` Widget
+
+1. **Integration in `Expenses`**:
+   - The `Chart` widget is added to the `Expenses` widget's `body` property. It is displayed above the list of expenses.
+
+   ```dart
+   body: Column(
+     children: [
+       Chart(expenses: _registeredExpenses),
+       Expanded(child: mainContent),
+     ],
+   ),
+   ```
+
+2. **Dynamic Updates**:
+   - The `Chart` widget receives the `_registeredExpenses` list as a parameter. Whenever the list is updated (e.g., an expense is added or removed), the chart automatically updates to reflect the changes.
+
+---
+
+### Code Example for Chart Integration
+
+Here is the relevant code from the `Expenses` widget:
+
+```dart
+@override
+Widget build(context) {
+  Widget mainContent = const Center(
+    child: Text('No expenses found. Start adding some!'),
+  );
+
+  if (_registeredExpenses.isNotEmpty) {
+    mainContent = ExpensesList(
+      expenses: _registeredExpenses,
+      onRemoveExpense: _removeExpense,
+    );
+  }
+
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Flutter Expense Tracker'),
+      actions: [
+        IconButton(
+          onPressed: _openAddExpenseOverlay,
+          icon: const Icon(Icons.add),
+        )
+      ],
+    ),
+    body: Column(
+      children: [
+        Chart(expenses: _registeredExpenses),
+        Expanded(child: mainContent),
+      ],
+    ),
+  );
+}
+```
+
+---
+
+### How the Chart Works Together with Other Widgets
+
+1. **Data Flow**:
+   - The `Expenses` widget manages the state of the `_registeredExpenses` list.
+   - The `Chart` widget receives this list and calculates the total expenses for each category.
+
+2. **Dynamic Updates**:
+   - When an expense is added or removed, the `setState` method in the `Expenses` widget triggers a rebuild, updating both the chart and the list of expenses.
+
+3. **Visual Representation**:
+   - The chart provides a quick overview of spending by category, while the list displays detailed information about individual expenses.
 ```
 ```
 
@@ -365,10 +530,10 @@ flutter pub add intl
 To switch to the next branch, run:
 
 ```bash
-git checkout snackbars
+git checkout 
 ```
 
----
+---chart
 
 **The order of branches from the start of the project is:**
 - **starter**

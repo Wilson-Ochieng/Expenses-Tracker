@@ -169,6 +169,170 @@ void _removeExpense(Expense expense) {
     ),
   );
 }
+
+### 7. **Theming and Dark Mode Logic**
+
+The application supports both light and dark themes using `ThemeData` and `ColorScheme`. The `main.dart` file defines the theming logic.
+
+#### Light Theme
+
+The light theme uses a `ColorScheme` generated from a seed color. It customizes the appearance of the app, including the `AppBar`, `Card`, and `ElevatedButton`.
+
+```dart
+var kColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color.fromARGB(255, 96, 59, 181),
+);
+
+theme: ThemeData().copyWith(
+  useMaterial3: true,
+  colorScheme: kColorScheme,
+  appBarTheme: const AppBarTheme().copyWith(
+    backgroundColor: kColorScheme.onPrimaryContainer,
+    foregroundColor: kColorScheme.primaryContainer,
+  ),
+  cardTheme: const CardTheme().copyWith(
+    color: kColorScheme.secondaryContainer,
+    margin: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 8,
+    ),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: kColorScheme.primaryContainer,
+    ),
+  ),
+  textTheme: ThemeData().textTheme.copyWith(
+    titleLarge: TextStyle(
+      fontWeight: FontWeight.bold,
+      color: kColorScheme.onSecondaryContainer,
+      fontSize: 16,
+    ),
+  ),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 247, 240, 248),
+),
+```
+
+#### Dark Theme
+
+The dark theme is also generated from a seed color and includes similar customizations for `Card` and `ElevatedButton`.
+
+```dart
+var kDarkColorScheme = ColorScheme.fromSeed(
+  brightness: Brightness.dark,
+  seedColor: const Color.fromARGB(225, 5, 99, 125),
+);
+
+darkTheme: ThemeData.dark().copyWith(
+  useMaterial3: true,
+  colorScheme: kDarkColorScheme,
+  cardTheme: const CardTheme().copyWith(
+    color: kDarkColorScheme.secondaryContainer,
+    margin: const EdgeInsets.symmetric(
+      horizontal: 16,
+      vertical: 8,
+    ),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: kDarkColorScheme.primaryContainer,
+    ),
+  ),
+),
+```
+
+#### Theme Mode
+
+The app uses `ThemeMode.system` to automatically switch between light and dark themes based on the system settings.
+
+```dart
+themeMode: ThemeMode.system,
+```
+
+---
+
+### How the Theming Works
+
+1. **Light and Dark Themes**:
+   - The `kColorScheme` and `kDarkColorScheme` variables define the color schemes for light and dark modes, respectively.
+   - These schemes are applied to the `ThemeData` for light and dark themes.
+
+2. **Customizations**:
+   - The `AppBar`, `Card`, and `ElevatedButton` widgets are customized for both themes.
+   - The `textTheme` is also customized for the light theme.
+
+3. **Theme Switching**:
+   - The `themeMode` property is set to `ThemeMode.system`, which automatically applies the appropriate theme based on the user's system settings.
+
+---
+
+### Code Example for Theming and Dark Mode
+
+Here is the full theming logic from `main.dart`:
+
+```dart
+var kColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color.fromARGB(255, 96, 59, 181),
+);
+
+var kDarkColorScheme = ColorScheme.fromSeed(
+  brightness: Brightness.dark,
+  seedColor: const Color.fromARGB(225, 5, 99, 125),
+);
+
+void main() {
+  runApp(
+    MaterialApp(
+      darkTheme: ThemeData.dark().copyWith(
+        useMaterial3: true,
+        colorScheme: kDarkColorScheme,
+        cardTheme: const CardTheme().copyWith(
+          color: kDarkColorScheme.secondaryContainer,
+          margin: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kDarkColorScheme.primaryContainer,
+          ),
+        ),
+      ),
+      theme: ThemeData().copyWith(
+        useMaterial3: true,
+        colorScheme: kColorScheme,
+        appBarTheme: const AppBarTheme().copyWith(
+          backgroundColor: kColorScheme.onPrimaryContainer,
+          foregroundColor: kColorScheme.primaryContainer,
+        ),
+        cardTheme: const CardTheme().copyWith(
+          color: kColorScheme.secondaryContainer,
+          margin: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kColorScheme.primaryContainer,
+          ),
+        ),
+        textTheme: ThemeData().textTheme.copyWith(
+          titleLarge: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: kColorScheme.onSecondaryContainer,
+            fontSize: 16,
+          ),
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 247, 240, 248),
+      ),
+      themeMode: ThemeMode.system,
+      home: const Expenses(),
+    ),
+  );
+}
+```
 ```
 
 ---
@@ -218,13 +382,16 @@ git checkout snackbars
 - **fullscreenmodal**
 - **dismissiblewidget**
 - **snackbars**
+- **theming**
+- **chart**
+
 
 ---
 
 To switch to the next branch, run:
 
 ```bash
-git checkout theming
+git checkout chart
 ```
 
 ---

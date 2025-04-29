@@ -14,6 +14,9 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // This is used to set the preferred orientations of the app
+  // to portrait mode only. This is useful for apps that are
+  // designed to be used in portrait mode only.
   SystemChrome.setPreferredOrientations([
 
     DeviceOrientation.portraitUp,

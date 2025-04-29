@@ -49,23 +49,21 @@ class _ExpensesState extends State<Expenses> {
               onAddExpense: __addExpense,
             ));
   }
- 
- //Adding Expenses
+
+  //Adding Expenses
   void __addExpense(Expense expense) {
     setState(() {
       _registeredExpenses.add(expense);
     });
   }
 
-
   //Removing Expenses
 
-  void _removeExpense(Expense expense){
-     final expenseIndex = _registeredExpenses.indexOf(expense);
+  void _removeExpense(Expense expense) {
+    final expenseIndex = _registeredExpenses.indexOf(expense);
 
     setState(() {
       _registeredExpenses.remove(expense);
-      
     });
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -76,7 +74,7 @@ class _ExpensesState extends State<Expenses> {
           label: 'Undo',
           onPressed: () {
             setState(() {
-              _registeredExpenses.insert(expenseIndex,expense);
+              _registeredExpenses.insert(expenseIndex, expense);
             });
           },
         ),
@@ -84,11 +82,10 @@ class _ExpensesState extends State<Expenses> {
     );
   }
 
-
-
   @override
   Widget build(context) {
-
+    final width = MediaQuery.of(context).size.width;
+    // final height = MediaQuery.of(context).size.height;
     Widget mainContent = const Center(
       child: Text('No expenses found. Start adding some!'),
     );
@@ -100,23 +97,28 @@ class _ExpensesState extends State<Expenses> {
       );
     }
 
-   
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Expense Tracker'),
-        actions: [
-          IconButton(
-            onPressed: _openAddExpenseOverlay,
-            icon: const Icon(Icons.add),
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-        Chart(expenses: _registeredExpenses),
-          Expanded(child:mainContent),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Flutter Expense Tracker'),
+          actions: [
+            IconButton(
+              onPressed: _openAddExpenseOverlay,
+              icon: const Icon(Icons.add),
+            )
+          ],
+        ),
+        body: width < 600
+            ? Column(
+                children: [
+                  Chart(expenses: _registeredExpenses),
+                  Expanded(child: mainContent),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(child: Chart(expenses: _registeredExpenses)),
+                  Expanded(child: mainContent),
+                ],
+              ));
   }
 }

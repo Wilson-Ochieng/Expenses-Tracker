@@ -17,10 +17,10 @@ void main() {
   // This is used to set the preferred orientations of the app
   // to portrait mode only. This is useful for apps that are
   // designed to be used in portrait mode only.
-  SystemChrome.setPreferredOrientations([
+  // SystemChrome.setPreferredOrientations([
 
-    DeviceOrientation.portraitUp,
-  ]).then((fn){
+  //   DeviceOrientation.portraitUp,
+  // ]).then((fn){
     runApp(
     MaterialApp(
       darkTheme: ThemeData.dark().copyWith(
@@ -79,6 +79,6 @@ void main() {
   );
 
 
-  });
+  // });
   
 }

@@ -43,6 +43,8 @@ class _ExpensesState extends State<Expenses> {
     //showModalBottomSheet is a built in function that shows a bottom sheet
 
     showModalBottomSheet(
+      //Added useSafeArea to avoid the bottom sheet overlapping camera and other system UI
+        useSafeArea: true,
         isScrollControlled: true,
         context: context,
         builder: (ctx) => NewExpense(
